@@ -1,5 +1,5 @@
--- Set <space> as the leader key
--- See `:help mapleader`
+--[[ -- Set <space> as the leader key ]]
+--[[ -- See `:help mapleader` ]]
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -192,6 +192,17 @@ require('lazy').setup({
       },
     },
   },
+  {
+    'numToString/Comment.nvim',
+    opts = {
+      toggler = {
+        line = '<leader>/',
+      },
+      opleader = {
+        line = '<leader>/',
+      },
+    },
+  },
 
   -- NOTE: Plugins can specify dependencies.
   --
@@ -259,10 +270,9 @@ require('lazy').setup({
             },
           },
         },
-        -- pickers = {}
         extensions = {
           ['ui-select'] = {
-            require('telescope.themes').get_cursor(),
+            require('telescope.themes').get_dropdown(),
           },
         },
       }
@@ -285,22 +295,22 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
-      vim.keymap.set('n', '<leader>/', function()
+      vim.keymap.set('n', '<leader>f/', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
-        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_cursor {
+        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
           winblend = 10,
           previewer = false,
         })
-      end, { desc = '[/] Fuzzily search in current buffer' })
+      end, { desc = 'Fuzzily search in current buffer' })
 
       -- It's also possible to pass additional configuration options.
       --  See `:help telescope.builtin.live_grep()` for information about particular keys
-      vim.keymap.set('n', '<leader>f/', function()
+      vim.keymap.set('n', '<leader>fo', function()
         builtin.live_grep {
           grep_open_files = true,
           prompt_title = 'Live Grep in Open Files',
         }
-      end, { desc = '[F]ind [/] in Open Files' })
+      end, { desc = '[F]ind in [O]pen Files' })
 
       -- Shortcut for searching your Neovim configuration files
       vim.keymap.set('n', '<leader>fn', function()
@@ -453,9 +463,33 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
+        basedpyright = {
+          analysis = {
+            diagnosticMode = 'openFilesOnly',
+            typeCheckingMode = 'basic',
+          },
+        },
+        pyright = {
+          analysis = {
+            diagnosticMode = 'openFilesOnly',
+            typeCheckingMode = 'basic',
+          },
+        },
+        gopls = {
+          settings = {
+            go = {
+              didChangeWatchedFiles = false,
+              usePlaceholders = true,
+              completeFunctionCalls = true,
+              analyses = {
+                unreachable = true,
+                unusedvariable = true,
+              },
+              hoverKind = 'FullDocumentation',
+            },
+          },
+        },
         -- clangd = {},
-        gopls = {},
-        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
